@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/layout/fragment_run.xml" value="0.10960144927536232" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.10960144927536232" />
+        <entry key="app/src/main/res/layout/fragment_setup.xml" value="0.10960144927536232" />
+        <entry key="app/src/main/res/layout/fragment_statistic.xml" value="0.10960144927536232" />
+        <entry key="app/src/main/res/layout/fragment_tracking.xml" value="0.10960144927536232" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK" />
 </project>

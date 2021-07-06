@@ -1,7 +1,8 @@
-package com.example.runningtrackerapp
+package com.example.runningtrackerapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.runningtrackerapp.R
 import dagger.hilt.android.AndroidEntryPoint
 
 
