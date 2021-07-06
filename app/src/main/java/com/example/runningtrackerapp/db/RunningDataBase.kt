@@ -12,4 +12,5 @@ import androidx.room.TypeConverters
 )
 @TypeConverters(Convertors::class)
 abstract class RunningDataBase : RoomDatabase(){
+    abstract fun getRunDao(): RunDao
 }
