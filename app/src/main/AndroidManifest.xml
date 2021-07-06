@@ -15,7 +15,7 @@
         android:name=".BaseApplication"
         android:theme="@style/Theme.RunningTrackerApp">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>
