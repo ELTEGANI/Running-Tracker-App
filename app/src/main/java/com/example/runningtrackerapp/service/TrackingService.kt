@@ -5,21 +5,55 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.location.Location
 import android.os.Build
+import android.os.Looper
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.example.runningtrackerapp.R
 import com.example.runningtrackerapp.other.Constants
 import com.example.runningtrackerapp.other.Constants.ACTION_PAUSE_SERVICE
 import com.example.runningtrackerapp.other.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.example.runningtrackerapp.other.Constants.ACTION_STOP_SERVICE
+import com.example.runningtrackerapp.other.Constants.FASTEST_LOCATION_INTERVAL
+import com.example.runningtrackerapp.other.Constants.LOCATION_UPDATE_INTERVAL
+import com.example.runningtrackerapp.other.TrackingUtility
 import com.example.runningtrackerapp.ui.MainActivity
+import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.maps.model.LatLng
 import timber.log.Timber
+
+
+typealias polyLine  = MutableList<LatLng>
+typealias polyLines = MutableList<polyLine>
 
 class TrackingService : LifecycleService() {
     var isFirstRun = true
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    companion object{
+        val isTracking = MutableLiveData<Boolean>()
+        val pathPoints = MutableLiveData<polyLines>()
+    }
+
+    private fun postInitialValue(){
+        isTracking.postValue(false)
+        pathPoints.postValue(mutableListOf())
+    }
+
+    @SuppressLint("VisibleForTests")
+    override fun onCreate() {
+        super.onCreate()
+        postInitialValue()
+        fusedLocationProviderClient = FusedLocationProviderClient(this)
+        isTracking.observe(this, {
+            updateLocationTracking(it)
+        })
+    }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when(it.action){
@@ -43,6 +77,55 @@ class TrackingService : LifecycleService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    @SuppressLint("MissingPermission")
+    private fun updateLocationTracking(isTracking:Boolean){
+         if (isTracking){
+             if (TrackingUtility.hasLocationPermission(this)){
+                 val request = LocationRequest().apply {
+                    interval = LOCATION_UPDATE_INTERVAL
+                    fastestInterval = FASTEST_LOCATION_INTERVAL
+                    priority = PRIORITY_HIGH_ACCURACY
+                 }
+                 fusedLocationProviderClient.requestLocationUpdates(
+                     request,
+                     locationCallback,
+                     Looper.getMainLooper()
+                 )
+             }
+         }else{
+             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+         }
+    }
+
+    private val locationCallback = object : LocationCallback(){
+        override fun onLocationResult(result: LocationResult?) {
+            super.onLocationResult(result)
+            if (isTracking.value!!){
+                result?.locations?.let {locations->
+                    for (location in locations){
+                        addPathPoint(location)
+                        Timber.d("New Location : ${location.latitude},${location.longitude}")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addPathPoint(location:Location?){
+      location?.let {
+           val pos = LatLng(location.latitude,location.longitude)
+           pathPoints.value?.apply {
+               last().add(pos)
+               pathPoints.postValue(this)
+           }
+      }
+    }
+
+    private fun addEmptyPolyLine() = pathPoints.value?.apply {
+        add(mutableListOf())
+        pathPoints.postValue(this)
+    }?: pathPoints.postValue(mutableListOf(mutableListOf()))
+
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun getMainActivityPendingIntent() = PendingIntent.getActivity(
         this,
@@ -53,6 +136,8 @@ class TrackingService : LifecycleService() {
     )
 
     private fun startForeGroundService(){
+        addEmptyPolyLine()
+        isTracking.postValue(true)
         val notificationManger = getSystemService(NOTIFICATION_SERVICE)
                 as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
