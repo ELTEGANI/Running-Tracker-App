@@ -29,15 +29,15 @@ import com.google.android.gms.maps.model.LatLng
 import timber.log.Timber
 
 
-typealias polyLine  = MutableList<LatLng>
-typealias polyLines = MutableList<polyLine>
+typealias Polyline = MutableList<LatLng>
+typealias Polylines = MutableList<Polyline>
 
 class TrackingService : LifecycleService() {
     var isFirstRun = true
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     companion object{
         val isTracking = MutableLiveData<Boolean>()
-        val pathPoints = MutableLiveData<polyLines>()
+        val pathPoints = MutableLiveData<Polylines>()
     }
 
     private fun postInitialValue(){
@@ -63,11 +63,13 @@ class TrackingService : LifecycleService() {
                     isFirstRun = false
                   }else{
                       Timber.d("Resuming service....")
+                      //startForeGroundService()
                   }
                   Timber.d("Started or resumed service")
                 }
                 ACTION_PAUSE_SERVICE ->{
                     Timber.d("Pause service")
+                    pauseService()
                 }
                 ACTION_STOP_SERVICE ->{
                     Timber.d("Stop service")
@@ -75,6 +77,10 @@ class TrackingService : LifecycleService() {
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun pauseService(){
+        isTracking.postValue(false)
     }
 
     @SuppressLint("MissingPermission")
