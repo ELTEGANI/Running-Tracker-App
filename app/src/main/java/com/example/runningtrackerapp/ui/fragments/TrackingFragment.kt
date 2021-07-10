@@ -123,10 +123,10 @@ class TrackingFragment : Fragment() {
     private fun updateTracking(isTracking:Boolean){
         this.isTracking = isTracking
         if(!isTracking) {
-            fragmentTrackingBinding.btnToggleRun.text = "Start"
+            fragmentTrackingBinding.btnToggleRun.text = getString(R.string.Start)
             fragmentTrackingBinding.btnFinishRun.visibility = View.VISIBLE
         } else {
-            fragmentTrackingBinding.btnToggleRun.text = "Stop"
+            fragmentTrackingBinding.btnToggleRun.text = getString(R.string.Stop)
             menu?.getItem(0)?.isVisible = true
             fragmentTrackingBinding.btnFinishRun.visibility = View.GONE
         }
