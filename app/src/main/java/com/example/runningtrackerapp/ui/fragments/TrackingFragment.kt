@@ -7,12 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.example.runningtrackerapp.R
 import com.example.runningtrackerapp.databinding.FragmentTrackingBinding
+import com.example.runningtrackerapp.other.Constants.ACTION_PAUSE_SERVICE
 import com.example.runningtrackerapp.other.Constants.ACTION_START_OR_RESUME_SERVICE
+import com.example.runningtrackerapp.other.Constants.MAP_ZOOM
+import com.example.runningtrackerapp.other.Constants.POLYLINE_COLOR
+import com.example.runningtrackerapp.other.Constants.POLYLINE_WIDTH
+import com.example.runningtrackerapp.service.Polyline
 import com.example.runningtrackerapp.service.TrackingService
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.PolylineOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -20,6 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class TrackingFragment : Fragment() {
     private lateinit var fragmentTrackingBinding: FragmentTrackingBinding
     private var googleMap : GoogleMap? = null
+    private var isTracking = false
+    private var pathPoints = mutableListOf<Polyline>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
         fragmentTrackingBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_tracking,container,false)
@@ -31,10 +39,76 @@ class TrackingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         fragmentTrackingBinding.mapView.onCreate(savedInstanceState)
         fragmentTrackingBinding.btnToggleRun.setOnClickListener {
-            sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
+            toggleRun()
         }
         fragmentTrackingBinding.mapView.getMapAsync {
             googleMap = it
+            addAllPolyLine()
+        }
+
+        subscriberToObservers()
+    }
+
+    private fun subscriberToObservers(){
+        TrackingService.isTracking.observe(viewLifecycleOwner, {
+            updateTracking(it)
+        })
+
+        TrackingService.pathPoints.observe(viewLifecycleOwner, {
+            pathPoints = it
+            addLastPloyLine()
+            moveCameraToUser()
+        })
+    }
+    private fun toggleRun(){
+      if(isTracking){
+         sendCommandToService(ACTION_PAUSE_SERVICE)
+      }else{
+         sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
+      }
+    }
+
+    private fun updateTracking(isTracking:Boolean){
+        this.isTracking = isTracking
+        if(!isTracking) {
+            fragmentTrackingBinding.btnToggleRun.text = "Start"
+            fragmentTrackingBinding.btnFinishRun.visibility = View.VISIBLE
+        } else {
+            fragmentTrackingBinding.btnToggleRun.text = "Stop"
+            fragmentTrackingBinding.btnFinishRun.visibility = View.GONE
+        }
+    }
+
+    private fun moveCameraToUser(){
+      if(pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()){
+          googleMap?.animateCamera(
+              CameraUpdateFactory.newLatLngZoom(
+                  pathPoints.last().last(),
+                  MAP_ZOOM
+              )
+          )
+      }
+    }
+
+    private fun addAllPolyLine(){
+        for(polyline in pathPoints) {
+            val polylineOptions = PolylineOptions()
+                .color(POLYLINE_COLOR)
+                .width(POLYLINE_WIDTH)
+                .addAll(polyline)
+            googleMap?.addPolyline(polylineOptions)
+        }
+    }
+    private fun addLastPloyLine(){
+        if(pathPoints.isNotEmpty() && pathPoints.last().size > 1) {
+            val preLastLatLng = pathPoints.last()[pathPoints.last().size - 2]
+            val lastLatLng = pathPoints.last().last()
+            val polylineOptions = PolylineOptions()
+                .color(POLYLINE_COLOR)
+                .width(POLYLINE_WIDTH)
+                .add(preLastLatLng)
+                .add(lastLatLng)
+            googleMap?.addPolyline(polylineOptions)
         }
     }
 
