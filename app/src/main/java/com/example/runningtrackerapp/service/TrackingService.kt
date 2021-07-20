@@ -30,6 +30,7 @@ import com.example.runningtrackerapp.ui.MainActivity
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -167,6 +168,7 @@ class TrackingService : LifecycleService() {
             notificationManager.notify(NOTIFICATION_ID,currentNotifcationBuilder.build())
         }
     }
+
 
     @SuppressLint("MissingPermission")
     private fun updateLocationTracking(isTracking:Boolean){
