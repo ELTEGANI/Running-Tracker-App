@@ -9,4 +9,9 @@
     </string-array>    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="Start">Start</string>
     <string name="Stop">Stop</string>
+    <string name="date">DATE</string>
+    <string name="time">TIME</string>
+    <string name="distance">DISTANCE</string>
+    <string name="avgspeed">AVGSPEED</string>
+    <string name="calories">CALORIES</string>
 </resources>

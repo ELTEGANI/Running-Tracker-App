@@ -9,11 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.runningtrackerapp.R
+import com.example.runningtrackerapp.adapter.RunAdapter
 import com.example.runningtrackerapp.databinding.FragmentRunBinding
-import com.example.runningtrackerapp.databinding.FragmentSetupBinding
-import com.example.runningtrackerapp.other.Constants
 import com.example.runningtrackerapp.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.runningtrackerapp.other.TrackingUtility
 import com.example.runningtrackerapp.ui.viewmodels.MainViewModels
@@ -27,17 +28,27 @@ class RunFragment : Fragment(),EasyPermissions.PermissionCallbacks {
 
     private val mainViewModels: MainViewModels by viewModels()
     private lateinit var fragmentRunBinding: FragmentRunBinding
+    private lateinit var runAdapter: RunAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
-        requestPermissions()
         fragmentRunBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_run,container,false)
         fragmentRunBinding.lifecycleOwner = this
+        requestPermissions()
+        setUpRecyclerView()
+        mainViewModels.runSortedByDate.observe(viewLifecycleOwner, Observer {
+            runAdapter.submitList(it)
+        })
         fragmentRunBinding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_runFragment2_to_trackingFragment)
         }
         return fragmentRunBinding.root
     }
 
+    private fun setUpRecyclerView() = fragmentRunBinding.rvRuns.apply {
+             runAdapter = RunAdapter()
+             adapter = runAdapter
+             layoutManager = LinearLayoutManager(requireContext())
+    }
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermission(requireContext())) {
             return
