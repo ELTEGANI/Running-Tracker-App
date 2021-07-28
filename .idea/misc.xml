@@ -16,6 +16,7 @@
         <entry key="app/src/main/res/layout/fragment_statistic.xml" value="0.10960144927536232" />
         <entry key="app/src/main/res/layout/fragment_tracking.xml" value="0.10960144927536232" />
         <entry key="app/src/main/res/layout/item_run.xml" value="0.12273550724637682" />
+        <entry key="app/src/main/res/layout/marker_view.xml" value="0.10054347826086957" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.1953125" />
         <entry key="app/src/main/res/menu/toolbar_tracking_menu.xml" value="0.19230769230769232" />
       </map>
