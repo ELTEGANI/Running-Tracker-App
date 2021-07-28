@@ -14,4 +14,7 @@
     <string name="distance">DISTANCE</string>
     <string name="avgspeed">AVGSPEED</string>
     <string name="calories">CALORIES</string>
+    <string name="your_name">Your Name</string>
+    <string name="your_weight">Your Weight</string>
+    <string name="apply_changes">Apply Changes</string>
 </resources>
