@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
         val navigationController = navHostFragment.navController
         NavigationUI.setupWithNavController(activityMainBinding.bottomNavigationView,navigationController)
         activityMainBinding.bottomNavigationView.setupWithNavController(navigationController)
+        activityMainBinding.bottomNavigationView.setOnNavigationItemReselectedListener {
+            /*NO OP*/
+        }
         navigationController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                R.id.settingsFragment2,R.id.runFragment2,R.id.statisticFragment->
