@@ -1,6 +1,6 @@
 ### Running-Tracker-App
 Android App built using Material design,kotlin, Architectural Components, Room, Coroutines, Navigation Components, Glide,
-Google Maps Location Services, Dagger hilt, Viewmodel, Easy Permissions,ForegroundService. Download Apk from [here](https://drive.google.com/file/d/1JG-0F5otkNoFhGvHatGUfRojvRGKnrEJ/view?usp=sharing)
+Google Maps Location Services, Dagger hilt, Viewmodel, Easy Permissions,ForegroundService,MPAndroidChart and Room. Download Apk from [here](https://drive.google.com/file/d/1JG-0F5otkNoFhGvHatGUfRojvRGKnrEJ/view?usp=sharing)
 
 
 
