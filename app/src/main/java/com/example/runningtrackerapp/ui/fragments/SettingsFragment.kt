@@ -5,24 +5,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import com.example.runningtrackerapp.R
+import com.example.runningtrackerapp.databinding.FragmentSettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private lateinit var fragmentSettingsBinding: FragmentSettingsBinding
 
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
+        fragmentSettingsBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings,container,false)
+        fragmentSettingsBinding.lifecycleOwner = this
+        return fragmentSettingsBinding.root
     }
 
 
